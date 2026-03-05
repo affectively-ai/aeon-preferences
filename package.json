@@ -1,0 +1,22 @@
+{
+  "name": "@affectively/aeon-preferences",
+  "version": "1.0.0",
+  "description": "Federated user preferences via Dash DB for the Aeon ecosystem.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/react": "^18.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  }
+}
