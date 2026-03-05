@@ -25,7 +25,7 @@ var __export = (target, all) => {
     });
 };
 
-// ../../node_modules/.pnpm/react@19.2.4/node_modules/react/cjs/react.development.js
+// ../../node_modules/.bun/react@19.2.3/node_modules/react/cjs/react.development.js
 var require_react_development = __commonJS((exports, module) => {
   (function() {
     function defineDeprecationWarning(methodName, info) {
@@ -843,12 +843,12 @@ See https://react.dev/link/invalid-hook-call for tips about how to debug and fix
     exports.useTransition = function() {
       return resolveDispatcher().useTransition();
     };
-    exports.version = "19.2.4";
+    exports.version = "19.2.3";
     typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function" && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
   })();
 });
 
-// ../../node_modules/.pnpm/react@19.2.4/node_modules/react/index.js
+// ../../node_modules/.bun/react@19.2.3/node_modules/react/index.js
 var require_react = __commonJS((exports, module) => {
   var react_development = __toESM(require_react_development());
   if (false) {} else {
@@ -856,7 +856,7 @@ var require_react = __commonJS((exports, module) => {
   }
 });
 
-// ../../node_modules/.pnpm/react@19.2.4/node_modules/react/cjs/react-jsx-dev-runtime.development.js
+// ../../node_modules/.bun/react@19.2.3/node_modules/react/cjs/react-jsx-dev-runtime.development.js
 var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
   var React = __toESM(require_react());
   (function() {
@@ -1071,7 +1071,7 @@ React keys must be passed directly to JSX without using spread:
   })();
 });
 
-// ../../node_modules/.pnpm/react@19.2.4/node_modules/react/jsx-dev-runtime.js
+// ../../node_modules/.bun/react@19.2.3/node_modules/react/jsx-dev-runtime.js
 var require_jsx_dev_runtime = __commonJS((exports, module) => {
   var react_jsx_dev_runtime_development = __toESM(require_react_jsx_dev_runtime_development());
   if (false) {} else {
@@ -1079,7 +1079,7 @@ var require_jsx_dev_runtime = __commonJS((exports, module) => {
   }
 });
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/external.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/external.js
 var exports_external = {};
 __export(exports_external, {
   void: () => voidType,
@@ -1191,7 +1191,7 @@ __export(exports_external, {
   BRAND: () => BRAND
 });
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/util.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/helpers/util.js
 var util;
 (function(util2) {
   util2.assertEqual = (_) => {};
@@ -1322,7 +1322,7 @@ var getParsedType = (data) => {
   }
 };
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/ZodError.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/ZodError.js
 var ZodIssueCode = util.arrayToEnum([
   "invalid_type",
   "invalid_literal",
@@ -1441,7 +1441,7 @@ ZodError.create = (issues) => {
   return error;
 };
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/locales/en.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/locales/en.js
 var errorMap = (issue, _ctx) => {
   let message;
   switch (issue.code) {
@@ -1544,7 +1544,7 @@ var errorMap = (issue, _ctx) => {
 };
 var en_default = errorMap;
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/errors.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/errors.js
 var overrideErrorMap = en_default;
 function setErrorMap(map) {
   overrideErrorMap = map;
@@ -1552,7 +1552,7 @@ function setErrorMap(map) {
 function getErrorMap() {
   return overrideErrorMap;
 }
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/parseUtil.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
   const { data, path, errorMaps, issueData } = params;
   const fullPath = [...path, ...issueData.path || []];
@@ -1658,14 +1658,14 @@ var isAborted = (x) => x.status === "aborted";
 var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/errorUtil.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/helpers/errorUtil.js
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
   errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
 })(errorUtil || (errorUtil = {}));
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/types.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js
 class ParseInputLazyPath {
   constructor(parent, value, path, key) {
     this._cachedPath = [];
@@ -5083,6 +5083,19 @@ var AeonPreferencesSchema = exports_external.object({
   vault: exports_external.record(exports_external.string()).default({})
 });
 var DEFAULT_PREFERENCES = AeonPreferencesSchema.parse({});
+// src/sanitize.ts
+function sanitizeCss(css) {
+  if (!css) {
+    return css;
+  }
+  let sanitized = css.replace(/<\/style>/gi, "");
+  sanitized = sanitized.replace(/<style[^>]*>/gi, "");
+  sanitized = sanitized.replace(/expression\s*\(/gi, "");
+  sanitized = sanitized.replace(/-moz-binding/gi, "");
+  sanitized = sanitized.replace(/url\s*\(\s*['"]?(javascript|vbscript):/gi, "url(");
+  return sanitized;
+}
+
 // src/store.ts
 class InMemoryPreferencesStore {
   prefs = { ...DEFAULT_PREFERENCES };
@@ -5091,17 +5104,24 @@ class InMemoryPreferencesStore {
     return this.prefs;
   }
   async updatePreferences(partial) {
+    const safePartial = { ...partial };
+    if (safePartial.theme?.cssOverrides) {
+      safePartial.theme = {
+        ...safePartial.theme,
+        cssOverrides: sanitizeCss(safePartial.theme.cssOverrides)
+      };
+    }
     this.prefs = AeonPreferencesSchema.parse({
       ...this.prefs,
-      ...partial,
-      theme: { ...this.prefs.theme, ...partial.theme },
-      security: { ...this.prefs.security, ...partial.security },
-      stargate: { ...this.prefs.stargate, ...partial.stargate },
-      locale: { ...this.prefs.locale, ...partial.locale },
-      agent: { ...this.prefs.agent, ...partial.agent },
-      flags: { ...this.prefs.flags, ...partial.flags },
-      namespaces: { ...this.prefs.namespaces, ...partial.namespaces },
-      vault: { ...this.prefs.vault, ...partial.vault }
+      ...safePartial,
+      theme: { ...this.prefs.theme, ...safePartial.theme },
+      security: { ...this.prefs.security, ...safePartial.security },
+      stargate: { ...this.prefs.stargate, ...safePartial.stargate },
+      locale: { ...this.prefs.locale, ...safePartial.locale },
+      agent: { ...this.prefs.agent, ...safePartial.agent },
+      flags: { ...this.prefs.flags, ...safePartial.flags },
+      namespaces: { ...this.prefs.namespaces, ...safePartial.namespaces },
+      vault: { ...this.prefs.vault, ...safePartial.vault }
     });
     this.notify();
   }
@@ -5165,21 +5185,28 @@ class DashPreferencesStore {
     return this.prefs;
   }
   async updatePreferences(partial) {
-    if (partial.vault) {
+    const safePartial = { ...partial };
+    if (safePartial.theme?.cssOverrides) {
+      safePartial.theme = {
+        ...safePartial.theme,
+        cssOverrides: sanitizeCss(safePartial.theme.cssOverrides)
+      };
+    }
+    if (safePartial.vault) {
       this.verifyCapability("vault/write");
     }
     this.verifyCapability("preferences/write");
     const newPrefs = AeonPreferencesSchema.parse({
       ...this.prefs,
-      ...partial,
-      theme: { ...this.prefs.theme, ...partial.theme },
-      security: { ...this.prefs.security, ...partial.security },
-      stargate: { ...this.prefs.stargate, ...partial.stargate },
-      locale: { ...this.prefs.locale, ...partial.locale },
-      agent: { ...this.prefs.agent, ...partial.agent },
-      flags: { ...this.prefs.flags, ...partial.flags },
-      namespaces: { ...this.prefs.namespaces, ...partial.namespaces },
-      vault: { ...this.prefs.vault, ...partial.vault }
+      ...safePartial,
+      theme: { ...this.prefs.theme, ...safePartial.theme },
+      security: { ...this.prefs.security, ...safePartial.security },
+      stargate: { ...this.prefs.stargate, ...safePartial.stargate },
+      locale: { ...this.prefs.locale, ...safePartial.locale },
+      agent: { ...this.prefs.agent, ...safePartial.agent },
+      flags: { ...this.prefs.flags, ...safePartial.flags },
+      namespaces: { ...this.prefs.namespaces, ...safePartial.namespaces },
+      vault: { ...this.prefs.vault, ...safePartial.vault }
     });
     const payload = this.zkKeys ? this.encrypt(newPrefs) : newPrefs;
     await this.relayClient.pushState({
@@ -5267,6 +5294,7 @@ ${JSON.stringify(updatedPrefs, null, 2)}`
 }
 export {
   useAeonPreferences,
+  sanitizeCss,
   createPreferencesMcpTools,
   ThemeModeSchema,
   StargateConfigSchema,

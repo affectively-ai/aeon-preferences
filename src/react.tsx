@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+} from 'react';
 import { AeonPreferences, DEFAULT_PREFERENCES } from './schema';
 import { PreferencesStore, InMemoryPreferencesStore } from './store';
 
@@ -7,14 +13,16 @@ const PreferencesContext = createContext<{
   updatePreferences: (partial: Partial<AeonPreferences>) => Promise<void>;
 } | null>(null);
 
-export function PreferencesProvider({ 
+export function PreferencesProvider({
   store = new InMemoryPreferencesStore(),
-  children 
-}: { 
+  children,
+}: {
   store?: PreferencesStore;
   children: React.ReactNode;
 }) {
-  const [preferences, setPreferences] = useState<AeonPreferences>(store.getPreferences());
+  const [preferences, setPreferences] = useState<AeonPreferences>(
+    store.getPreferences()
+  );
 
   useEffect(() => {
     return store.subscribe((newPrefs) => {
@@ -22,10 +30,14 @@ export function PreferencesProvider({
     });
   }, [store]);
 
-  const value = useMemo(() => ({
-    preferences,
-    updatePreferences: (partial: Partial<AeonPreferences>) => store.updatePreferences(partial),
-  }), [preferences, store]);
+  const value = useMemo(
+    () => ({
+      preferences,
+      updatePreferences: (partial: Partial<AeonPreferences>) =>
+        store.updatePreferences(partial),
+    }),
+    [preferences, store]
+  );
 
   return (
     <PreferencesContext.Provider value={value}>
@@ -37,7 +49,9 @@ export function PreferencesProvider({
 export function useAeonPreferences() {
   const context = useContext(PreferencesContext);
   if (!context) {
-    throw new Error('useAeonPreferences must be used within a PreferencesProvider');
+    throw new Error(
+      'useAeonPreferences must be used within a PreferencesProvider'
+    );
   }
   return context;
 }
