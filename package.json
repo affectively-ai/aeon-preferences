@@ -1,6 +1,6 @@
 {
   "name": "@affectively/aeon-preferences",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Federated user preferences via Dash DB for the Aeon ecosystem.",
   "type": "module",
   "main": "./dist/index.js",
