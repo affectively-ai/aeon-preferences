@@ -1,4 +1,9 @@
-import { AeonPreferences, DEFAULT_PREFERENCES, AeonPreferencesSchema } from './schema';
+import {
+  AeonPreferences,
+  DEFAULT_PREFERENCES,
+  AeonPreferencesSchema,
+} from './schema';
+import { sanitizeCss } from './sanitize';
 
 export interface PreferencesStore {
   getPreferences(): AeonPreferences;
@@ -15,17 +20,25 @@ export class InMemoryPreferencesStore implements PreferencesStore {
   }
 
   async updatePreferences(partial: Partial<AeonPreferences>): Promise<void> {
+    const safePartial = { ...partial };
+    if (safePartial.theme?.cssOverrides) {
+      safePartial.theme = {
+        ...safePartial.theme,
+        cssOverrides: sanitizeCss(safePartial.theme.cssOverrides),
+      };
+    }
+
     this.prefs = AeonPreferencesSchema.parse({
       ...this.prefs,
-      ...partial,
-      theme: { ...this.prefs.theme, ...partial.theme },
-      security: { ...this.prefs.security, ...partial.security },
-      stargate: { ...this.prefs.stargate, ...partial.stargate },
-      locale: { ...this.prefs.locale, ...partial.locale },
-      agent: { ...this.prefs.agent, ...partial.agent },
-      flags: { ...this.prefs.flags, ...partial.flags },
-      namespaces: { ...this.prefs.namespaces, ...partial.namespaces },
-      vault: { ...this.prefs.vault, ...partial.vault },
+      ...safePartial,
+      theme: { ...this.prefs.theme, ...safePartial.theme },
+      security: { ...this.prefs.security, ...safePartial.security },
+      stargate: { ...this.prefs.stargate, ...safePartial.stargate },
+      locale: { ...this.prefs.locale, ...safePartial.locale },
+      agent: { ...this.prefs.agent, ...safePartial.agent },
+      flags: { ...this.prefs.flags, ...safePartial.flags },
+      namespaces: { ...this.prefs.namespaces, ...safePartial.namespaces },
+      vault: { ...this.prefs.vault, ...safePartial.vault },
     });
     this.notify();
   }

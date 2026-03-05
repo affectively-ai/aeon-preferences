@@ -1,5 +1,10 @@
-import { AeonPreferences, AeonPreferencesSchema, DEFAULT_PREFERENCES } from './schema';
+import {
+  AeonPreferences,
+  AeonPreferencesSchema,
+  DEFAULT_PREFERENCES,
+} from './schema';
 import { PreferencesStore } from './store';
+import { sanitizeCss } from './sanitize';
 
 export interface UcanToken {
   token: string;
@@ -20,7 +25,7 @@ export interface DashPreferencesStoreOptions {
 export class DashPreferencesStore implements PreferencesStore {
   private prefs: AeonPreferences = { ...DEFAULT_PREFERENCES };
   private listeners: Set<(prefs: AeonPreferences) => void> = new Set();
-  
+
   private relayClient: any;
   private ucan: UcanToken;
   private zkKeys?: ZkKeypair;
@@ -31,7 +36,7 @@ export class DashPreferencesStore implements PreferencesStore {
     this.ucan = options.ucan;
     this.zkKeys = options.zkKeys;
     this.graphPath = options.graphPath || 'user/preferences';
-    
+
     // In a real implementation, you would:
     // 1. Subscribe to Yjs/DashRelay at this.graphPath
     // 2. Fetch the initial state
@@ -45,10 +50,18 @@ export class DashPreferencesStore implements PreferencesStore {
   }
 
   async updatePreferences(partial: Partial<AeonPreferences>): Promise<void> {
+    const safePartial = { ...partial };
+    if (safePartial.theme?.cssOverrides) {
+      safePartial.theme = {
+        ...safePartial.theme,
+        cssOverrides: sanitizeCss(safePartial.theme.cssOverrides),
+      };
+    }
+
     // 1. Verify UCAN capability locally before sending.
     // If the partial includes vault data, require 'vault/write'.
-    if (partial.vault) {
-        this.verifyCapability('vault/write');
+    if (safePartial.vault) {
+      this.verifyCapability('vault/write');
     }
     // If updating global preferences
     this.verifyCapability('preferences/write');
@@ -56,16 +69,16 @@ export class DashPreferencesStore implements PreferencesStore {
     // 2. Compute new state
     const newPrefs = AeonPreferencesSchema.parse({
       ...this.prefs,
-      ...partial,
-      theme: { ...this.prefs.theme, ...partial.theme },
-      security: { ...this.prefs.security, ...partial.security },
-      stargate: { ...this.prefs.stargate, ...partial.stargate },
-      locale: { ...this.prefs.locale, ...partial.locale },
-      agent: { ...this.prefs.agent, ...partial.agent },
-      flags: { ...this.prefs.flags, ...partial.flags },
-      namespaces: { ...this.prefs.namespaces, ...partial.namespaces },
+      ...safePartial,
+      theme: { ...this.prefs.theme, ...safePartial.theme },
+      security: { ...this.prefs.security, ...safePartial.security },
+      stargate: { ...this.prefs.stargate, ...safePartial.stargate },
+      locale: { ...this.prefs.locale, ...safePartial.locale },
+      agent: { ...this.prefs.agent, ...safePartial.agent },
+      flags: { ...this.prefs.flags, ...safePartial.flags },
+      namespaces: { ...this.prefs.namespaces, ...safePartial.namespaces },
       // Vault should ideally be merged via a secure method, but we merge keys here.
-      vault: { ...this.prefs.vault, ...partial.vault },
+      vault: { ...this.prefs.vault, ...safePartial.vault },
     });
 
     // 3. Encrypt payload. Ensure the vault is ALWAYS encrypted.
