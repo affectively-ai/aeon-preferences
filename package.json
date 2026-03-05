@@ -1,10 +1,13 @@
 {
   "name": "@affectively/aeon-preferences",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Federated user preferences via Dash DB for the Aeon ecosystem.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "bun build ./src/index.ts --outdir ./dist",
     "test": "bun test"
