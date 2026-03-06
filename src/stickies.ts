@@ -17,6 +17,8 @@ export interface StickyDefaultsPreference {
   mementoVisibility: StickyMementoVisibility;
   requireEncryptionForCollaboration: boolean;
   presenceMode: StickyPresenceMode;
+  defaultExpiryMinutes: number | null;
+  collaborationGrantDurationMinutes: number;
   trustedCollaboratorDids: string[];
 }
 
@@ -42,6 +44,8 @@ export const DEFAULT_STICKY_PREFERENCES: StickyNamespacePreferences = {
     mementoVisibility: 'linked',
     requireEncryptionForCollaboration: true,
     presenceMode: 'collaborators',
+    defaultExpiryMinutes: null,
+    collaborationGrantDurationMinutes: 60,
     trustedCollaboratorDids: [],
   },
 };
@@ -85,6 +89,23 @@ function toStickyDefaults(value: unknown): StickyDefaultsPreference {
     value['presenceMode'] === 'private' || value['presenceMode'] === 'public'
       ? value['presenceMode']
       : 'collaborators';
+  const rawDefaultExpiryMinutes = value['defaultExpiryMinutes'];
+  const defaultExpiryMinutes =
+    rawDefaultExpiryMinutes === null
+      ? null
+      : typeof rawDefaultExpiryMinutes === 'number' &&
+        Number.isFinite(rawDefaultExpiryMinutes) &&
+        rawDefaultExpiryMinutes > 0
+      ? rawDefaultExpiryMinutes
+      : DEFAULT_STICKY_PREFERENCES.defaults.defaultExpiryMinutes;
+  const rawCollaborationGrantDurationMinutes =
+    value['collaborationGrantDurationMinutes'];
+  const collaborationGrantDurationMinutes =
+    typeof rawCollaborationGrantDurationMinutes === 'number' &&
+    Number.isFinite(rawCollaborationGrantDurationMinutes) &&
+    rawCollaborationGrantDurationMinutes > 0
+      ? rawCollaborationGrantDurationMinutes
+      : DEFAULT_STICKY_PREFERENCES.defaults.collaborationGrantDurationMinutes;
 
   return {
     privacyMode,
@@ -93,6 +114,8 @@ function toStickyDefaults(value: unknown): StickyDefaultsPreference {
     mementoVisibility,
     requireEncryptionForCollaboration,
     presenceMode,
+    defaultExpiryMinutes,
+    collaborationGrantDurationMinutes,
     trustedCollaboratorDids: toStringArray(value['trustedCollaboratorDids']),
   };
 }
