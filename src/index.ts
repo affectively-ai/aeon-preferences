@@ -5,3 +5,4 @@ export * from './dash-store';
 export * from './mcp';
 export * from './sanitize';
 export * from './stickies';
+export * from './genesis';
