@@ -13,6 +13,11 @@ const PreferencesContext = createContext<{
   updatePreferences: (partial: Partial<AeonPreferences>) => Promise<void>;
 } | null>(null);
 
+const fallbackPreferencesContext = {
+  preferences: DEFAULT_PREFERENCES,
+  updatePreferences: async () => undefined,
+};
+
 export function PreferencesProvider({
   store = new InMemoryPreferencesStore(),
   children,
@@ -48,10 +53,5 @@ export function PreferencesProvider({
 
 export function useAeonPreferences() {
   const context = useContext(PreferencesContext);
-  if (!context) {
-    throw new Error(
-      'useAeonPreferences must be used within a PreferencesProvider'
-    );
-  }
-  return context;
+  return context ?? fallbackPreferencesContext;
 }
