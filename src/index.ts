@@ -7,3 +7,4 @@ export * from './sanitize';
 export * from './stickies';
 export * from './genesis';
 export * from './ghost';
+export * from './dissolution';
