@@ -173,10 +173,7 @@ export function appendTrustedStickyCollaborator(
   }
 
   const trustedCollaboratorDids = Array.from(
-    new Set([
-      ...stickyPreferences.defaults.trustedCollaboratorDids,
-      normalized,
-    ])
+    new Set([...stickyPreferences.defaults.trustedCollaboratorDids, normalized])
   );
 
   return mergeStickyPreferences(preferences, {

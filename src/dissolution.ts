@@ -110,7 +110,7 @@ export const DEFAULT_DISSOLUTION_PREFERENCES: DissolutionPreferences = {
     autoDesignateOnSleep: true,
   },
   centralization: {
-    maxPeerStatePercent: 0.20,
+    maxPeerStatePercent: 0.2,
     autoRebalance: true,
   },
   bandwidth: {
@@ -128,12 +128,13 @@ export const DEFAULT_DISSOLUTION_PREFERENCES: DissolutionPreferences = {
  * Returns defaults if namespace is missing or malformed.
  */
 export function readDissolutionPreferences(
-  preferences: AeonPreferences | null | undefined,
+  preferences: AeonPreferences | null | undefined
 ): DissolutionPreferences {
   if (!preferences?.namespaces) return { ...DEFAULT_DISSOLUTION_PREFERENCES };
 
   const raw = preferences.namespaces[DISSOLUTION_NAMESPACE_KEY];
-  if (!raw || typeof raw !== 'object') return { ...DEFAULT_DISSOLUTION_PREFERENCES };
+  if (!raw || typeof raw !== 'object')
+    return { ...DEFAULT_DISSOLUTION_PREFERENCES };
 
   const obj = raw as Record<string, unknown>;
 
@@ -183,7 +184,7 @@ export function readDissolutionPreferences(
  */
 export function mergeDissolutionPreferences(
   preferences: AeonPreferences | null | undefined,
-  partial: Partial<DissolutionPreferences>,
+  partial: Partial<DissolutionPreferences>
 ): Partial<AeonPreferences> {
   const current = readDissolutionPreferences(preferences);
 

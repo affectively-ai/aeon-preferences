@@ -21,7 +21,11 @@ export const GHOST_VAULT_KEY_PREFIX = 'ghost://vault/';
 // ---------------------------------------------------------------------------
 
 /** User-configurable merge strategy preference per component */
-export type GhostMergePreference = 'auto' | 'manual-confirm' | 'primary-wins' | 'most-recent';
+export type GhostMergePreference =
+  | 'auto'
+  | 'manual-confirm'
+  | 'primary-wins'
+  | 'most-recent';
 
 /** Streaming priority preference */
 export type GhostStreamPriority = 'ai-first' | 'emotion-first' | 'balanced';
@@ -176,7 +180,7 @@ export const DEFAULT_GHOST_PREFERENCES: GhostNamespacePreferences = {
  * Returns defaults if namespace is missing or malformed.
  */
 export function readGhostPreferences(
-  preferences: AeonPreferences | null | undefined,
+  preferences: AeonPreferences | null | undefined
 ): GhostNamespacePreferences {
   if (!preferences?.namespaces) return { ...DEFAULT_GHOST_PREFERENCES };
 
@@ -228,7 +232,7 @@ export function readGhostPreferences(
  */
 export function mergeGhostPreferences(
   preferences: AeonPreferences | null | undefined,
-  partial: Partial<GhostNamespacePreferences>,
+  partial: Partial<GhostNamespacePreferences>
 ): Partial<AeonPreferences> {
   const current = readGhostPreferences(preferences);
 
@@ -263,7 +267,7 @@ export function mergeGhostPreferences(
  */
 export function recordGhostOperation(
   preferences: AeonPreferences | null | undefined,
-  record: GhostOperationRecord,
+  record: GhostOperationRecord
 ): Partial<AeonPreferences> {
   const current = readGhostPreferences(preferences);
   const history = [...current.operationHistory, record].slice(-20);

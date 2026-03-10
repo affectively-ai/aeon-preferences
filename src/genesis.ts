@@ -108,7 +108,9 @@ function toString(value: unknown): string | undefined {
 }
 
 function toFiniteNumber(value: unknown): number | undefined {
-  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
 }
 
 function parseDefaults(value: unknown): GenesisDefaultsPreference {
@@ -165,7 +167,8 @@ function parseImpulse(value: unknown): GenesisImpulsePreference | null {
     return null;
   }
 
-  const axis = value['axis'] === 'y' ? 'y' : value['axis'] === 'x' ? 'x' : undefined;
+  const axis =
+    value['axis'] === 'y' ? 'y' : value['axis'] === 'x' ? 'x' : undefined;
   return {
     id,
     kind,
@@ -218,14 +221,22 @@ function parsePreset(value: unknown): GenesisPresetPreference | null {
   const label = toString(value['label']);
   const createdAt = toFiniteNumber(value['createdAt']);
   const updatedAt = toFiniteNumber(value['updatedAt']);
-  if (!id || !label || typeof createdAt !== 'number' || typeof updatedAt !== 'number') {
+  if (
+    !id ||
+    !label ||
+    typeof createdAt !== 'number' ||
+    typeof updatedAt !== 'number'
+  ) {
     return null;
   }
 
   const impulses = Array.isArray(value['impulses'])
     ? value['impulses']
         .map((candidate) => parseImpulse(candidate))
-        .filter((candidate): candidate is GenesisImpulsePreference => candidate !== null)
+        .filter(
+          (candidate): candidate is GenesisImpulsePreference =>
+            candidate !== null
+        )
     : [];
 
   return {
@@ -255,12 +266,18 @@ export function readGenesisPreferences(
   const bookmarks = Array.isArray(namespace['bookmarks'])
     ? namespace['bookmarks']
         .map((candidate) => parseBookmark(candidate))
-        .filter((candidate): candidate is GenesisBookmarkPreference => candidate !== null)
+        .filter(
+          (candidate): candidate is GenesisBookmarkPreference =>
+            candidate !== null
+        )
     : [];
   const presets = Array.isArray(namespace['presets'])
     ? namespace['presets']
         .map((candidate) => parsePreset(candidate))
-        .filter((candidate): candidate is GenesisPresetPreference => candidate !== null)
+        .filter(
+          (candidate): candidate is GenesisPresetPreference =>
+            candidate !== null
+        )
     : [];
 
   return {

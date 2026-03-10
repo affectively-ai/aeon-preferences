@@ -71,7 +71,9 @@ export declare function createPreferencesMcpTools(store: PreferencesStore): ({
                 persona?: string;
                 pronouns?: string;
             }>>>;
-            custom: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
+            flags: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodBoolean>>>;
+            namespaces: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>>;
+            vault: z.ZodOptional<z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodString>>>;
         }, "strip", z.ZodTypeAny, {
             theme?: {
                 mode?: "light" | "dark" | "system";
@@ -95,7 +97,9 @@ export declare function createPreferencesMcpTools(store: PreferencesStore): ({
                 persona?: string;
                 pronouns?: string;
             };
-            custom?: Record<string, unknown>;
+            flags?: Record<string, boolean>;
+            namespaces?: Record<string, any>;
+            vault?: Record<string, string>;
         }, {
             theme?: {
                 mode?: "light" | "dark" | "system";
@@ -119,7 +123,9 @@ export declare function createPreferencesMcpTools(store: PreferencesStore): ({
                 persona?: string;
                 pronouns?: string;
             };
-            custom?: Record<string, unknown>;
+            flags?: Record<string, boolean>;
+            namespaces?: Record<string, any>;
+            vault?: Record<string, string>;
         }>;
     }, "strip", z.ZodTypeAny, {
         preferences?: {
@@ -145,7 +151,9 @@ export declare function createPreferencesMcpTools(store: PreferencesStore): ({
                 persona?: string;
                 pronouns?: string;
             };
-            custom?: Record<string, unknown>;
+            flags?: Record<string, boolean>;
+            namespaces?: Record<string, any>;
+            vault?: Record<string, string>;
         };
     }, {
         preferences?: {
@@ -171,7 +179,9 @@ export declare function createPreferencesMcpTools(store: PreferencesStore): ({
                 persona?: string;
                 pronouns?: string;
             };
-            custom?: Record<string, unknown>;
+            flags?: Record<string, boolean>;
+            namespaces?: Record<string, any>;
+            vault?: Record<string, string>;
         };
     }>;
     execute: (args: {

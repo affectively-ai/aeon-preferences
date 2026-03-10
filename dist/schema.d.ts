@@ -70,7 +70,9 @@ export declare const AeonPreferencesSchema: z.ZodObject<{
         persona?: string;
         pronouns?: string;
     }>>;
-    custom: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodUnknown>>;
+    flags: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodBoolean>>;
+    namespaces: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodAny>>;
+    vault: z.ZodDefault<z.ZodRecord<z.ZodString, z.ZodString>>;
 }, "strip", z.ZodTypeAny, {
     theme?: {
         mode?: "light" | "dark" | "system";
@@ -94,7 +96,9 @@ export declare const AeonPreferencesSchema: z.ZodObject<{
         persona?: string;
         pronouns?: string;
     };
-    custom?: Record<string, unknown>;
+    flags?: Record<string, boolean>;
+    namespaces?: Record<string, any>;
+    vault?: Record<string, string>;
 }, {
     theme?: {
         mode?: "light" | "dark" | "system";
@@ -118,7 +122,9 @@ export declare const AeonPreferencesSchema: z.ZodObject<{
         persona?: string;
         pronouns?: string;
     };
-    custom?: Record<string, unknown>;
+    flags?: Record<string, boolean>;
+    namespaces?: Record<string, any>;
+    vault?: Record<string, string>;
 }>;
 export type ThemeMode = z.infer<typeof ThemeModeSchema>;
 export type StargateConfig = z.infer<typeof StargateConfigSchema>;

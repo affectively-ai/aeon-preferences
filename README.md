@@ -104,4 +104,4 @@ const tools = createPreferencesMcpTools(store);
 
 ## License
 
-UNLICENSED - Edgework DAO
+UNLICENSED - Taylor William Buley
