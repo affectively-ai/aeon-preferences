@@ -1,54 +1,38 @@
 # @affectively/aeon-preferences
 
-A unified, federated user preferences store for the entire Aeon ecosystem. Backed by Dash DB (via `dashrelay`), it provides real-time, cross-device sync of user settings, access controls, entitlements, and highly sensitive encrypted custodial wallets.
+`@affectively/aeon-preferences` is a synced preferences store for Aeon apps, sites, tools, and agents.
 
-## Features
+The fair brag is that it goes beyond "theme and locale." The package already covers namespaced preferences, flag overrides, a protected vault area for sensitive values, React bindings, MCP tools, and a store model designed for multi-device sync.
 
-- **Federated State:** Powered by Yjs and DashRelay. Update a preference on your phone, and it instantly applies to your desktop shell.
-- **Granular Namespaces:** Strict path-based separation for Apps, Sites, and MCPs (e.g., `namespaces["app://remote.fun.language-decoder"]`). Games and tools can read/write their own isolated settings without polluting global state.
-- **Zero-Knowledge Vault:** A dedicated `vault` namespace designed exclusively for highly sensitive data like Agent Wallets and Custodial Keys. Enforces client-side ZK-encryption before transmission to the relay.
-- **UCAN Authorized:** Built from the ground up to support UCAN capability delegations. You can grant an Agent the `preferences/read` capability, or explicitly restrict a third-party app to `namespace/write:app://my-game`.
-- **Goodchild Flags Integration:** Native support for merging global `aeon-flags` broadcasts with user-overridden feature flags.
-- **React & MCP Ready:** Ships with a `<PreferencesProvider>` for instant React reactivity, and pre-built MCP tools (`get_aeon_preferences`, `update_aeon_preferences`) for immediate Agent integration.
+## Why People May Like It
 
-## Installation
+- preferences can be shared across devices instead of staying trapped in one browser tab,
+- namespaced storage keeps one app from stepping on another app's settings,
+- the vault area gives sensitive values a separate place and a separate capability story,
+- `aeon-flags` overrides can live alongside normal preferences,
+- and React and MCP entry points are included instead of left as follow-up work.
+
+## Install
 
 ```bash
 npm install @affectively/aeon-preferences
 ```
 
-## Schema Overview
+## Schema Shape
 
-The federated graph is structured using strict Zod validation.
+At a high level, the store includes:
 
-```typescript
-export const AeonPreferencesSchema = z.object({
-  theme: z.object({ mode: z.string(), cssOverrides: z.string() }),
-  security: z.object({ disabledApps: z.array(z.string()), disabledMcps: z.array(z.string()) }),
-  stargate: z.object({ autoConnect: z.boolean(), defaultRelay: z.string() }),
-  locale: z.object({ timezone: z.string(), language: z.string() }),
-  agent: z.object({ persona: z.string(), pronouns: z.string() }),
-  
-  // Feature Flags
-  flags: z.record(z.boolean()),
+- global preferences such as theme, locale, and security settings
+- `flags` for user-level feature overrides
+- `namespaces` for app-, site-, and tool-specific data
+- `vault` for sensitive values that need stronger handling
 
-  // Granular hierarchical storage for Apps, Sites, and MCPs
-  namespaces: z.record(z.any()),
+The schema is validated with Zod.
 
-  // Highly sensitive custodial wallets and keys (Must be ZK-encrypted)
-  vault: z.record(z.string()), 
-});
-```
-
-## Usage
-
-### 1. The React Provider
-
-Wrap your application to make it reactive to the federated Dash DB.
+## React Example
 
 ```tsx
 import { PreferencesProvider, useAeonPreferences } from '@affectively/aeon-preferences';
-// ... initialization of DashPreferencesStore ...
 
 function App() {
   return (
@@ -71,37 +55,33 @@ function Dashboard() {
 }
 ```
 
-### 2. The Federated Store (Dash DB)
+## Store Example
 
-Instantiate the store with your DashRelay client and UCAN token.
-
-```typescript
+```ts
 import { DashPreferencesStore } from '@affectively/aeon-preferences';
 
 const store = new DashPreferencesStore({
   relayClient: dashRelayClient,
-  ucan: { token: 'eyJhbG...' }, // Requires 'preferences/write'
-  zkKeys: { publicKey: '...', privateKey: '...' }, // Required for Vault access
-  graphPath: 'user/preferences'
+  ucan: { token: 'eyJhbG...' },
+  zkKeys: { publicKey: '...', privateKey: '...' },
+  graphPath: 'user/preferences',
 });
 ```
 
-### 3. Agent Integration (MCP Tools)
+## MCP Example
 
-Provide your AI Agents with direct access to user preferences.
-
-```typescript
+```ts
 import { createPreferencesMcpTools } from '@affectively/aeon-preferences';
 
 const tools = createPreferencesMcpTools(store);
-// Register these tools with your MCP Server or Kernel
 ```
 
-## Security & Scoping
+## Security And Scoping
 
-- **Global vs Namespace:** Global preferences (`theme`, `locale`) require `preferences/write` capabilities. Applications should request scoped access like `namespace/write:app://my-game`.
-- **The Vault:** Any interaction with the `vault` requires a distinct `vault/write` or `vault/read` UCAN capability, preventing rogue apps from accessing sensitive key material.
+- global preferences use broader capabilities such as `preferences/write`
+- namespaced settings can be scoped to a specific app or tool
+- vault access is intended to stay behind separate read and write capabilities
 
-## License
+## Why This README Is Grounded
 
-UNLICENSED - Taylor William Buley
+Aeon Preferences does not need sweeping claims. The strongest fair brag is that it already gives you a fairly complete preferences package with sync, scoping, React bindings, and automation hooks.
