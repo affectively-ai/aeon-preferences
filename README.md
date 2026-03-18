@@ -1,6 +1,6 @@
-# @affectively/aeon-preferences
+# @a0n/aeon-preferences
 
-`@affectively/aeon-preferences` is a synced preferences store for Aeon apps, sites, tools, and agents.
+`@a0n/aeon-preferences` is a synced preferences store for Aeon apps, sites, tools, and agents.
 
 The fair brag is that it goes beyond "theme and locale." The package already covers namespaced preferences, flag overrides, a protected vault area for sensitive values, React bindings, MCP tools, and a store model designed for multi-device sync.
 
@@ -15,7 +15,7 @@ The fair brag is that it goes beyond "theme and locale." The package already cov
 ## Install
 
 ```bash
-npm install @affectively/aeon-preferences
+npm install @a0n/aeon-preferences
 ```
 
 ## Schema Shape
@@ -32,7 +32,7 @@ The schema is validated with Zod.
 ## React Example
 
 ```tsx
-import { PreferencesProvider, useAeonPreferences } from '@affectively/aeon-preferences';
+import { PreferencesProvider, useAeonPreferences } from '@a0n/aeon-preferences';
 
 function App() {
   return (
@@ -58,7 +58,7 @@ function Dashboard() {
 ## Store Example
 
 ```ts
-import { DashPreferencesStore } from '@affectively/aeon-preferences';
+import { DashPreferencesStore } from '@a0n/aeon-preferences';
 
 const store = new DashPreferencesStore({
   relayClient: dashRelayClient,
@@ -71,7 +71,7 @@ const store = new DashPreferencesStore({
 ## MCP Example
 
 ```ts
-import { createPreferencesMcpTools } from '@affectively/aeon-preferences';
+import { createPreferencesMcpTools } from '@a0n/aeon-preferences';
 
 const tools = createPreferencesMcpTools(store);
 ```

@@ -1,5 +1,5 @@
 {
-  "name": "@affectively/aeon-preferences",
+  "name": "@a0n/aeon-preferences",
   "version": "5.0.0",
   "description": "Federated user preferences via Dash DB for the Aeon ecosystem.",
   "type": "module",
