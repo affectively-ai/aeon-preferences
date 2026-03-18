@@ -1,15 +1,19 @@
 var __defProp = Object.defineProperty;
+var __returnValue = (v) => v;
+function __exportSetter(name, newValue) {
+  this[name] = __returnValue.bind(null, newValue);
+}
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, {
       get: all[name],
       enumerable: true,
       configurable: true,
-      set: (newValue) => all[name] = () => newValue
+      set: __exportSetter.bind(all, name)
     });
 };
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/external.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/external.js
 var exports_external = {};
 __export(exports_external, {
   void: () => voidType,
@@ -121,7 +125,7 @@ __export(exports_external, {
   BRAND: () => BRAND
 });
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/util.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/helpers/util.js
 var util;
 (function(util2) {
   util2.assertEqual = (_) => {};
@@ -252,7 +256,7 @@ var getParsedType = (data) => {
   }
 };
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/ZodError.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/ZodError.js
 var ZodIssueCode = util.arrayToEnum([
   "invalid_type",
   "invalid_literal",
@@ -371,7 +375,7 @@ ZodError.create = (issues) => {
   return error;
 };
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/locales/en.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/locales/en.js
 var errorMap = (issue, _ctx) => {
   let message;
   switch (issue.code) {
@@ -474,7 +478,7 @@ var errorMap = (issue, _ctx) => {
 };
 var en_default = errorMap;
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/errors.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/errors.js
 var overrideErrorMap = en_default;
 function setErrorMap(map) {
   overrideErrorMap = map;
@@ -482,7 +486,7 @@ function setErrorMap(map) {
 function getErrorMap() {
   return overrideErrorMap;
 }
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/parseUtil.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
   const { data, path, errorMaps, issueData } = params;
   const fullPath = [...path, ...issueData.path || []];
@@ -588,14 +592,14 @@ var isAborted = (x) => x.status === "aborted";
 var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/errorUtil.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/helpers/errorUtil.js
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
   errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
 })(errorUtil || (errorUtil = {}));
 
-// ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/types.js
+// ../../node_modules/.bun/zod@3.25.76/node_modules/zod/v3/types.js
 class ParseInputLazyPath {
   constructor(parent, value, path, key) {
     this._cachedPath = [];
@@ -4077,6 +4081,12 @@ import {
 } from "react";
 import { jsxDEV } from "react/jsx-dev-runtime";
 var PreferencesContext = createContext(null);
+var fallbackPreferencesContext = {
+  preferences: DEFAULT_PREFERENCES,
+  updatePreferences: async () => {
+    return;
+  }
+};
 function PreferencesProvider({
   store = new InMemoryPreferencesStore,
   children
@@ -4098,10 +4108,7 @@ function PreferencesProvider({
 }
 function useAeonPreferences() {
   const context = useContext(PreferencesContext);
-  if (!context) {
-    throw new Error("useAeonPreferences must be used within a PreferencesProvider");
-  }
-  return context;
+  return context ?? fallbackPreferencesContext;
 }
 // src/dash-store.ts
 class DashPreferencesStore {
@@ -4228,15 +4235,524 @@ ${JSON.stringify(updatedPrefs, null, 2)}`
     }
   ];
 }
+// src/stickies.ts
+var STICKY_NAMESPACE_KEY = "app://note.yoga/stickies";
+var STICKY_VAULT_KEY_PREFIX = "sticky://vault/";
+var STICKY_ISSUER_VAULT_KEY = `${STICKY_VAULT_KEY_PREFIX}issuer`;
+var STICKY_GRANT_VAULT_KEY_PREFIX = `${STICKY_VAULT_KEY_PREFIX}grant/`;
+var DEFAULT_STICKY_PREFERENCES = {
+  defaults: {
+    privacyMode: "plaintext",
+    anchorMode: "global",
+    anchorRadiusMiles: 0.06,
+    mementoVisibility: "linked",
+    requireEncryptionForCollaboration: true,
+    presenceMode: "collaborators",
+    defaultExpiryMinutes: null,
+    collaborationGrantDurationMinutes: 60,
+    trustedCollaboratorDids: []
+  }
+};
+function isRecord(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function toStringArray(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter((candidate) => typeof candidate === "string" && candidate.trim().length > 0);
+}
+function toStickyDefaults(value) {
+  if (!isRecord(value)) {
+    return { ...DEFAULT_STICKY_PREFERENCES.defaults };
+  }
+  const privacyMode = value["privacyMode"] === "encrypted" ? "encrypted" : "plaintext";
+  const anchorMode = value["anchorMode"] === "context" || value["anchorMode"] === "geospatial" ? value["anchorMode"] : "global";
+  const rawRadius = value["anchorRadiusMiles"];
+  const anchorRadiusMiles = typeof rawRadius === "number" && Number.isFinite(rawRadius) && rawRadius > 0 ? rawRadius : DEFAULT_STICKY_PREFERENCES.defaults.anchorRadiusMiles;
+  const mementoVisibility = value["mementoVisibility"] === "public" ? "public" : "linked";
+  const requireEncryptionForCollaboration = value["requireEncryptionForCollaboration"] !== false;
+  const presenceMode = value["presenceMode"] === "private" || value["presenceMode"] === "public" ? value["presenceMode"] : "collaborators";
+  const rawDefaultExpiryMinutes = value["defaultExpiryMinutes"];
+  const defaultExpiryMinutes = rawDefaultExpiryMinutes === null ? null : typeof rawDefaultExpiryMinutes === "number" && Number.isFinite(rawDefaultExpiryMinutes) && rawDefaultExpiryMinutes > 0 ? rawDefaultExpiryMinutes : DEFAULT_STICKY_PREFERENCES.defaults.defaultExpiryMinutes;
+  const rawCollaborationGrantDurationMinutes = value["collaborationGrantDurationMinutes"];
+  const collaborationGrantDurationMinutes = typeof rawCollaborationGrantDurationMinutes === "number" && Number.isFinite(rawCollaborationGrantDurationMinutes) && rawCollaborationGrantDurationMinutes > 0 ? rawCollaborationGrantDurationMinutes : DEFAULT_STICKY_PREFERENCES.defaults.collaborationGrantDurationMinutes;
+  return {
+    privacyMode,
+    anchorMode,
+    anchorRadiusMiles,
+    mementoVisibility,
+    requireEncryptionForCollaboration,
+    presenceMode,
+    defaultExpiryMinutes,
+    collaborationGrantDurationMinutes,
+    trustedCollaboratorDids: toStringArray(value["trustedCollaboratorDids"])
+  };
+}
+function readStickyPreferences(preferences) {
+  const namespace = preferences?.namespaces?.[STICKY_NAMESPACE_KEY];
+  if (!isRecord(namespace)) {
+    return {
+      ...DEFAULT_STICKY_PREFERENCES,
+      defaults: { ...DEFAULT_STICKY_PREFERENCES.defaults }
+    };
+  }
+  return {
+    stickies: Array.isArray(namespace["stickies"]) ? [...namespace["stickies"]] : undefined,
+    defaults: toStickyDefaults(namespace["defaults"])
+  };
+}
+function mergeStickyPreferences(preferences, partial) {
+  const existing = readStickyPreferences(preferences);
+  return {
+    namespaces: {
+      ...preferences?.namespaces,
+      [STICKY_NAMESPACE_KEY]: {
+        ...existing,
+        ...partial,
+        defaults: {
+          ...existing.defaults,
+          ...partial.defaults,
+          trustedCollaboratorDids: partial.defaults?.trustedCollaboratorDids ?? existing.defaults.trustedCollaboratorDids
+        }
+      }
+    }
+  };
+}
+function appendTrustedStickyCollaborator(preferences, collaboratorDid) {
+  const stickyPreferences = readStickyPreferences(preferences);
+  const normalized = collaboratorDid.trim();
+  if (normalized.length === 0) {
+    return mergeStickyPreferences(preferences, {});
+  }
+  const trustedCollaboratorDids = Array.from(new Set([...stickyPreferences.defaults.trustedCollaboratorDids, normalized]));
+  return mergeStickyPreferences(preferences, {
+    defaults: {
+      ...stickyPreferences.defaults,
+      trustedCollaboratorDids
+    }
+  });
+}
+function buildStickyVaultKey(noteId, keyId) {
+  return `${STICKY_VAULT_KEY_PREFIX}${noteId}/${keyId}`;
+}
+function buildStickyGrantVaultKey(noteId, grantId) {
+  return `${STICKY_GRANT_VAULT_KEY_PREFIX}${noteId}/${grantId}`;
+}
+function serializeStickyVaultEnvelope(envelope) {
+  return JSON.stringify(envelope);
+}
+function parseStickyVaultEnvelope(value) {
+  if (typeof value !== "string" || value.trim().length === 0) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(value);
+    if (!isRecord(parsed)) {
+      return null;
+    }
+    const kind = parsed["kind"];
+    const payload = parsed["payload"];
+    const createdAt = parsed["createdAt"];
+    if (kind !== "sticky-key" && kind !== "sticky-issuer" && kind !== "sticky-grant" || typeof payload !== "string" || typeof createdAt !== "number" || !Number.isFinite(createdAt)) {
+      return null;
+    }
+    return {
+      kind,
+      payload,
+      createdAt,
+      ...typeof parsed["noteId"] === "string" ? { noteId: parsed["noteId"] } : {},
+      ...typeof parsed["stickyId"] === "string" ? { stickyId: parsed["stickyId"] } : {},
+      ...typeof parsed["collaboratorDid"] === "string" ? { collaboratorDid: parsed["collaboratorDid"] } : {}
+    };
+  } catch {
+    return null;
+  }
+}
+function mergeStickyVaultEntries(entries) {
+  const nextVault = {};
+  for (const [key, entry] of Object.entries(entries)) {
+    nextVault[key] = serializeStickyVaultEnvelope(entry);
+  }
+  return {
+    vault: nextVault
+  };
+}
+// src/genesis.ts
+var GENESIS_NAMESPACE_KEY = "app://shell.aeonflux.dev/genesis";
+var DEFAULT_GENESIS_PREFERENCES = {
+  defaults: {
+    lens: "blend",
+    mode: "system1",
+    motionScale: 1,
+    showContours: true,
+    autoCollapseOnSelect: true
+  },
+  bookmarks: [],
+  presets: []
+};
+function isRecord2(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function clamp(value, min, max) {
+  if (!Number.isFinite(value)) {
+    return min;
+  }
+  if (value < min) {
+    return min;
+  }
+  if (value > max) {
+    return max;
+  }
+  return value;
+}
+function toLens(value) {
+  return value === "semantic" || value === "affective" || value === "social" || value === "spatial" || value === "temporal" ? value : "blend";
+}
+function toMode(value) {
+  return value === "system2" ? "system2" : "system1";
+}
+function toString(value) {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
+}
+function toFiniteNumber(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+function parseDefaults(value) {
+  if (!isRecord2(value)) {
+    return { ...DEFAULT_GENESIS_PREFERENCES.defaults };
+  }
+  return {
+    lens: toLens(value["lens"]),
+    mode: toMode(value["mode"]),
+    motionScale: clamp(toFiniteNumber(value["motionScale"]) ?? DEFAULT_GENESIS_PREFERENCES.defaults.motionScale, 0.2, 1.4),
+    showContours: typeof value["showContours"] === "boolean" ? value["showContours"] : DEFAULT_GENESIS_PREFERENCES.defaults.showContours,
+    autoCollapseOnSelect: typeof value["autoCollapseOnSelect"] === "boolean" ? value["autoCollapseOnSelect"] : DEFAULT_GENESIS_PREFERENCES.defaults.autoCollapseOnSelect
+  };
+}
+function parseImpulse(value) {
+  if (!isRecord2(value)) {
+    return null;
+  }
+  const id = toString(value["id"]);
+  const kind = value["kind"];
+  const x = toFiniteNumber(value["x"]);
+  const y = toFiniteNumber(value["y"]);
+  const radius = toFiniteNumber(value["radius"]);
+  const strength = toFiniteNumber(value["strength"]);
+  const createdAt = toFiniteNumber(value["createdAt"]);
+  if (!id || kind !== "attractor" && kind !== "repulsor" && kind !== "shear" && kind !== "freeze" && kind !== "damp" && kind !== "amplify" || typeof x !== "number" || typeof y !== "number" || typeof radius !== "number" || typeof strength !== "number" || typeof createdAt !== "number") {
+    return null;
+  }
+  const axis = value["axis"] === "y" ? "y" : value["axis"] === "x" ? "x" : undefined;
+  return {
+    id,
+    kind,
+    x: clamp(x, 0, 1),
+    y: clamp(y, 0, 1),
+    radius: clamp(radius, 0.05, 0.8),
+    strength: clamp(strength, 0.05, 1.5),
+    createdAt,
+    ...axis ? { axis } : {}
+  };
+}
+function parseBookmark(value) {
+  if (!isRecord2(value)) {
+    return null;
+  }
+  const id = toString(value["id"]);
+  const label = toString(value["label"]);
+  const createdAt = toFiniteNumber(value["createdAt"]);
+  if (!id || !label || typeof createdAt !== "number") {
+    return null;
+  }
+  return {
+    id,
+    label,
+    lens: toLens(value["lens"]),
+    mode: toMode(value["mode"]),
+    createdAt,
+    ...toString(value["focusEntityId"]) ? { focusEntityId: toString(value["focusEntityId"]) } : {},
+    ...toString(value["focusAddress"]) ? { focusAddress: toString(value["focusAddress"]) } : {},
+    ...toString(value["snapshotRoot"]) ? { snapshotRoot: toString(value["snapshotRoot"]) } : {},
+    ...toString(value["query"]) ? { query: toString(value["query"]) } : {}
+  };
+}
+function parsePreset(value) {
+  if (!isRecord2(value)) {
+    return null;
+  }
+  const id = toString(value["id"]);
+  const label = toString(value["label"]);
+  const createdAt = toFiniteNumber(value["createdAt"]);
+  const updatedAt = toFiniteNumber(value["updatedAt"]);
+  if (!id || !label || typeof createdAt !== "number" || typeof updatedAt !== "number") {
+    return null;
+  }
+  const impulses = Array.isArray(value["impulses"]) ? value["impulses"].map((candidate) => parseImpulse(candidate)).filter((candidate) => candidate !== null) : [];
+  return {
+    id,
+    label,
+    ...toString(value["focusAddress"]) ? { focusAddress: toString(value["focusAddress"]) } : {},
+    impulses,
+    createdAt,
+    updatedAt
+  };
+}
+function readGenesisPreferences(preferences) {
+  const namespace = preferences?.namespaces?.[GENESIS_NAMESPACE_KEY];
+  if (!isRecord2(namespace)) {
+    return {
+      defaults: { ...DEFAULT_GENESIS_PREFERENCES.defaults },
+      bookmarks: [],
+      presets: []
+    };
+  }
+  const bookmarks = Array.isArray(namespace["bookmarks"]) ? namespace["bookmarks"].map((candidate) => parseBookmark(candidate)).filter((candidate) => candidate !== null) : [];
+  const presets = Array.isArray(namespace["presets"]) ? namespace["presets"].map((candidate) => parsePreset(candidate)).filter((candidate) => candidate !== null) : [];
+  return {
+    defaults: parseDefaults(namespace["defaults"]),
+    bookmarks,
+    presets
+  };
+}
+function mergeGenesisPreferences(preferences, partial) {
+  const existing = readGenesisPreferences(preferences);
+  return {
+    namespaces: {
+      ...preferences?.namespaces,
+      [GENESIS_NAMESPACE_KEY]: {
+        defaults: {
+          ...existing.defaults,
+          ...partial.defaults
+        },
+        bookmarks: partial.bookmarks ?? existing.bookmarks,
+        presets: partial.presets ?? existing.presets
+      }
+    }
+  };
+}
+// src/ghost.ts
+var GHOST_NAMESPACE_KEY = "app://shell.aeonflux.dev/ghost";
+var GHOST_VAULT_KEY_PREFIX = "ghost://vault/";
+var DEFAULT_GHOST_PREFERENCES = {
+  migration: {
+    autoCompress: true,
+    maxSizeBudgetBytes: 50 * 1024 * 1024,
+    streamPriority: "ai-first",
+    announceRelocation: true,
+    forwardingTtlMs: 24 * 60 * 60 * 1000
+  },
+  fork: {
+    autoFork: "ask",
+    mergeWindowDays: 30,
+    notifyMergeWindowExpiry: true,
+    expiryWarningDays: 3
+  },
+  merge: {
+    loraStrategy: "auto",
+    cvmStrategy: "most-recent",
+    cyranoStrategy: "auto",
+    knowledgeGraphStrategy: "auto",
+    tellsStrategy: "most-recent",
+    preferencesStrategy: "most-recent",
+    requireConsentForMerge: true
+  },
+  consent: {
+    requireVoice: true,
+    requireTyping: true,
+    consentTimeoutSeconds: 60,
+    bequeathPolicy: "require-biometric"
+  },
+  components: {
+    lora: true,
+    cyrano: true,
+    cvm: true,
+    tells: true,
+    neurochemical: true,
+    knowledgeGraph: true,
+    preferences: true
+  },
+  operationHistory: []
+};
+function readGhostPreferences(preferences) {
+  if (!preferences?.namespaces)
+    return { ...DEFAULT_GHOST_PREFERENCES };
+  const raw = preferences.namespaces[GHOST_NAMESPACE_KEY];
+  if (!raw || typeof raw !== "object")
+    return { ...DEFAULT_GHOST_PREFERENCES };
+  const obj = raw;
+  return {
+    migration: {
+      ...DEFAULT_GHOST_PREFERENCES.migration,
+      ...typeof obj.migration === "object" && obj.migration !== null ? obj.migration : {}
+    },
+    fork: {
+      ...DEFAULT_GHOST_PREFERENCES.fork,
+      ...typeof obj.fork === "object" && obj.fork !== null ? obj.fork : {}
+    },
+    merge: {
+      ...DEFAULT_GHOST_PREFERENCES.merge,
+      ...typeof obj.merge === "object" && obj.merge !== null ? obj.merge : {}
+    },
+    consent: {
+      ...DEFAULT_GHOST_PREFERENCES.consent,
+      ...typeof obj.consent === "object" && obj.consent !== null ? obj.consent : {}
+    },
+    components: {
+      ...DEFAULT_GHOST_PREFERENCES.components,
+      ...typeof obj.components === "object" && obj.components !== null ? obj.components : {}
+    },
+    operationHistory: Array.isArray(obj.operationHistory) ? obj.operationHistory.slice(-20) : []
+  };
+}
+function mergeGhostPreferences(preferences, partial) {
+  const current = readGhostPreferences(preferences);
+  const merged = {
+    migration: partial.migration ? { ...current.migration, ...partial.migration } : current.migration,
+    fork: partial.fork ? { ...current.fork, ...partial.fork } : current.fork,
+    merge: partial.merge ? { ...current.merge, ...partial.merge } : current.merge,
+    consent: partial.consent ? { ...current.consent, ...partial.consent } : current.consent,
+    components: partial.components ? { ...current.components, ...partial.components } : current.components,
+    operationHistory: partial.operationHistory ?? current.operationHistory
+  };
+  return {
+    namespaces: {
+      ...preferences?.namespaces ?? {},
+      [GHOST_NAMESPACE_KEY]: merged
+    }
+  };
+}
+function recordGhostOperation(preferences, record) {
+  const current = readGhostPreferences(preferences);
+  const history = [...current.operationHistory, record].slice(-20);
+  return mergeGhostPreferences(preferences, { operationHistory: history });
+}
+function buildGhostVaultKey(ghostCid, keyId) {
+  return `${GHOST_VAULT_KEY_PREFIX}${ghostCid}/${keyId}`;
+}
+// src/dissolution.ts
+var DISSOLUTION_NAMESPACE_KEY = "app://shell.aeonflux.dev/dissolution";
+var DEFAULT_DISSOLUTION_PREFERENCES = {
+  trust: {
+    defaultTier: "acquaintance",
+    autoPromoteThreshold: 50,
+    decayDays: 30
+  },
+  fragmentation: {
+    enabled: true,
+    mediumReplicaCount: 3,
+    lowReplicaCount: 1,
+    survivalTarget: 0.8
+  },
+  checkpoint: {
+    enabled: true,
+    intervalMs: 300000,
+    maxSizeBytes: 10 * 1024 * 1024,
+    targetPeerCount: 3
+  },
+  proxy: {
+    enabled: true,
+    defaultTtlMs: 30 * 60 * 1000,
+    autoDesignateOnSleep: true
+  },
+  centralization: {
+    maxPeerStatePercent: 0.2,
+    autoRebalance: true
+  },
+  bandwidth: {
+    maxSustainedBytesPerMin: 102400,
+    lazyGraphSync: true
+  }
+};
+function readDissolutionPreferences(preferences) {
+  if (!preferences?.namespaces)
+    return { ...DEFAULT_DISSOLUTION_PREFERENCES };
+  const raw = preferences.namespaces[DISSOLUTION_NAMESPACE_KEY];
+  if (!raw || typeof raw !== "object")
+    return { ...DEFAULT_DISSOLUTION_PREFERENCES };
+  const obj = raw;
+  return {
+    trust: {
+      ...DEFAULT_DISSOLUTION_PREFERENCES.trust,
+      ...typeof obj.trust === "object" && obj.trust !== null ? obj.trust : {}
+    },
+    fragmentation: {
+      ...DEFAULT_DISSOLUTION_PREFERENCES.fragmentation,
+      ...typeof obj.fragmentation === "object" && obj.fragmentation !== null ? obj.fragmentation : {}
+    },
+    checkpoint: {
+      ...DEFAULT_DISSOLUTION_PREFERENCES.checkpoint,
+      ...typeof obj.checkpoint === "object" && obj.checkpoint !== null ? obj.checkpoint : {}
+    },
+    proxy: {
+      ...DEFAULT_DISSOLUTION_PREFERENCES.proxy,
+      ...typeof obj.proxy === "object" && obj.proxy !== null ? obj.proxy : {}
+    },
+    centralization: {
+      ...DEFAULT_DISSOLUTION_PREFERENCES.centralization,
+      ...typeof obj.centralization === "object" && obj.centralization !== null ? obj.centralization : {}
+    },
+    bandwidth: {
+      ...DEFAULT_DISSOLUTION_PREFERENCES.bandwidth,
+      ...typeof obj.bandwidth === "object" && obj.bandwidth !== null ? obj.bandwidth : {}
+    }
+  };
+}
+function mergeDissolutionPreferences(preferences, partial) {
+  const current = readDissolutionPreferences(preferences);
+  const merged = {
+    trust: partial.trust ? { ...current.trust, ...partial.trust } : current.trust,
+    fragmentation: partial.fragmentation ? { ...current.fragmentation, ...partial.fragmentation } : current.fragmentation,
+    checkpoint: partial.checkpoint ? { ...current.checkpoint, ...partial.checkpoint } : current.checkpoint,
+    proxy: partial.proxy ? { ...current.proxy, ...partial.proxy } : current.proxy,
+    centralization: partial.centralization ? { ...current.centralization, ...partial.centralization } : current.centralization,
+    bandwidth: partial.bandwidth ? { ...current.bandwidth, ...partial.bandwidth } : current.bandwidth
+  };
+  return {
+    namespaces: {
+      ...preferences?.namespaces ?? {},
+      [DISSOLUTION_NAMESPACE_KEY]: merged
+    }
+  };
+}
 export {
   useAeonPreferences,
+  serializeStickyVaultEnvelope,
   sanitizeCss,
+  recordGhostOperation,
+  readStickyPreferences,
+  readGhostPreferences,
+  readGenesisPreferences,
+  readDissolutionPreferences,
+  parseStickyVaultEnvelope,
+  mergeStickyVaultEntries,
+  mergeStickyPreferences,
+  mergeGhostPreferences,
+  mergeGenesisPreferences,
+  mergeDissolutionPreferences,
   createPreferencesMcpTools,
+  buildStickyVaultKey,
+  buildStickyGrantVaultKey,
+  buildGhostVaultKey,
+  appendTrustedStickyCollaborator,
   ThemeModeSchema,
   StargateConfigSchema,
+  STICKY_VAULT_KEY_PREFIX,
+  STICKY_NAMESPACE_KEY,
+  STICKY_ISSUER_VAULT_KEY,
+  STICKY_GRANT_VAULT_KEY_PREFIX,
   PreferencesProvider,
   InMemoryPreferencesStore,
+  GHOST_VAULT_KEY_PREFIX,
+  GHOST_NAMESPACE_KEY,
+  GENESIS_NAMESPACE_KEY,
   DashPreferencesStore,
+  DISSOLUTION_NAMESPACE_KEY,
+  DEFAULT_STICKY_PREFERENCES,
   DEFAULT_PREFERENCES,
+  DEFAULT_GHOST_PREFERENCES,
+  DEFAULT_GENESIS_PREFERENCES,
+  DEFAULT_DISSOLUTION_PREFERENCES,
   AeonPreferencesSchema
 };
